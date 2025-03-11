@@ -1,0 +1,19 @@
+@startuml C4_Context_Warm_House
+
+title С4 Context diagram система "Теплый дом"
+
+!include ../template_C4/C4_Context.puml
+
+Person(user, "User", "Пользователь системы")
+
+System(warmHouseSystem, "'Теплый дом'", "Управление отоплением, получение текущего состояния отопления")
+
+System_Ext(heatingDevices, "Отопительное оборудование", "Uses REST API, JSON data format")
+System_Ext(temperatureSensor, "Датчики температуры", "Uses REST API, JSON data format")
+
+Rel(user, warmHouseSystem, "Send requests to system")
+
+Rel(warmHouseSystem, heatingDevices, "Send requests to heating device")
+Rel(warmHouseSystem, temperatureSensor, "Send requests to temperature sensors")
+
+@enduml
