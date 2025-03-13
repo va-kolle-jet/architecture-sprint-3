@@ -48,7 +48,7 @@
 ### 5. Визуализация контекста системы — диаграмма С4
 
 ```markdown
-[С4 Context diagram система "Теплый дом"](./diagrams/context/ex1_part5_context.png)
+[С4 Context diagram система "Теплый дом"](diagrams/context/ex1_part5_context.png)
 ```
 
 # Задание 2. Проектирование микросервисной архитектуры
