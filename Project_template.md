@@ -55,7 +55,7 @@
 
 **Диаграмма контейнеров (Containers)**
 
-Добавьте диаграмму.
+![С4 Context diagram система "Умный дом"](diagrams/context/ex2_part1_context.png)
 
 **Диаграмма компонентов (Components)**
 
