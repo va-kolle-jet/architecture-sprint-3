@@ -1,0 +1,110 @@
+@startuml C4_Context_Smart_House_ex2
+
+title To-Be С4 Component diagram система "Умный дом"
+
+!include ../template_C4/C4_Component.puml
+
+
+System_Boundary(warmHouseSystem, "Умный дом", "Управление системой умного дома") {
+        
+    Container(apiGateway, "API Gateway", "Kong", "Маршрутизация запросов, балансировка нагрузки, авторизация")
+
+    Container(messageBroker, "Message Broker", "Apache Kafka", "Для асинхронного взаимодействия внутренних компонентов системы")
+  
+    Container(userService, "User service", "Spring Boot", "Авторизация, хранение персональных данных") {
+        Component(usersController, "User Controller", "API по работе с пользовательскими данными")
+        Component(usersServiceLayer, "User Service", "Бизнес логика")
+        Component(authService, "Auth service", "Авторизация, ПДН")
+        Component(userRepository, "User Repository", "Блок по работе с БД")
+
+      Rel(usersController, usersServiceLayer, "Uses")
+      Rel(usersServiceLayer, userRepository, "Reads/Writes data")
+      Rel(authService, userRepository, "Reads/Writes data")
+    }
+
+    Container(deviceService, "Device service", "Spring Boot", "Бизнес логика по работе с умными устройствами"){
+        Component(devicesController, "Controller", "API по работе с умными устройствами")
+        Component(devicesServiceLayer, "Service Layer", "Бизнес логика")
+        Component(devicesRepository, "Repository", "Блок по работе с БД")
+        Component(devicesCommandExecutor, "Command Executor", "Обработчик пользовательских команд")
+        Component(devicesAdapter, "Device Adapter", "Адаптер для взаимодествия с устройствами(транспортный слой)")
+
+      Rel(devicesController, devicesServiceLayer, "Uses")
+      Rel(devicesServiceLayer, devicesCommandExecutor, "Uses")
+      Rel(devicesCommandExecutor, devicesAdapter, "Uses")
+      Rel(devicesServiceLayer, devicesRepository, "Reads/Writes data")
+    }
+
+    Container(telemetryService, "Telemetry service", "Spring Boot", "Обработка данных телеметрии"){
+        Component(telemetryController, "Controller", "API по работе с данными телеметрии")
+        Component(telemetryServiceLayer, "Service Layer", "Бизнес логикаa")
+        Component(telemetryRepository, "Repository", "Блок по работе с БД")
+
+      Rel(telemetryController, telemetryServiceLayer, "Uses")
+      Rel(telemetryServiceLayer, telemetryRepository, "Reads/Writes data")
+    }
+
+    Container(notificationService, "Notification service", "Spring Boot", "Работа с уведомлениями"){
+        Component(notificationController, "Controller", "API по работе с нотификациями")
+        Component(notificationServiceLayer, "Service Layer", "Бизнес логикаa")
+        Component(notificationRepository, "Repository", "Блок по работе с БД")
+
+      Rel(notificationController, notificationServiceLayer, "Uses")
+      Rel(notificationServiceLayer, notificationRepository, "Reads/Writes data")
+}
+
+    Container(reportService, "Report service", "Spring Boot", "Формирование отчетов, графиков для мониторинга работы системы"){
+        Component(reportController, "Controller", "API по работе с нотификациями")
+        Component(reportServiceLayer, "Service Layer", "Бизнес логикаa")
+        Component(reportRepository, "Repository", "Блок по работе с БД")
+
+      Rel(reportController, reportServiceLayer, "Uses")
+      Rel(reportServiceLayer, reportRepository, "Reads/Writes data")
+    }
+    
+}
+
+System_Ext(auth, "Auth server") {
+    Component(authComponent, "Keycloak") 
+}
+
+System_Ext(DB, "DB") {
+        ContainerDb(userDb, "Users database", "PostgreSQL")
+        ContainerDb(deviceManagementDb, "Devices database", "PostgreSQL")
+        ContainerDb(telemetryDb, "Telemetry database", "PostgreSQL")
+        ContainerDb(reportDb, "Report database", "PostgreSQL")
+}
+
+System_Ext(devicesSet,  "Группы подсистем умного дома") {
+        Component(heating, "Heating device", "Отопление") 
+        Component(temperatureSensor, "Temperature sensor", "Температура")
+        Component(lighting, "Lighting", "Освещение")
+        Component(automaticGates, "Automatic gates", "Автоматика")
+        Component(videoSurveillance, "Video surveillance", "Видео наблюдение")
+
+}
+
+' Routing Rels
+Rel(apiGateway, usersController, "Send API requests", "REST")
+Rel(apiGateway, devicesController, "Send API requests", "REST")
+Rel(apiGateway, telemetryController, "Send API requests ", "REST")
+Rel(apiGateway , notificationController, "Send API requests", "REST")
+Rel(apiGateway, reportController, "Reports", "REST")
+Rel(apiGateway, auth, "auth", "REST")
+Rel(authService, auth, "auth", "REST")
+
+' DB Rels
+Rel(userRepository, userDb, "Reads and writes", "JDBC")
+Rel(devicesRepository, deviceManagementDb, "Reads and writes", "JDBC")
+Rel(telemetryRepository, telemetryDb, "Reads and writes", "JDBC")
+Rel(reportRepository, reportDb, "Reads and writes", "JDBC")
+
+' Message Broker Rels
+Rel(deviceService, messageBroker, "Publishes command / subscribes to instructions", "Kafka")
+Rel(telemetryService, messageBroker, "Subscribes to telemetry", "Kafka")
+Rel(notificationService, messageBroker, "Subscribes to events", "Kafka")
+Rel(devicesSet, messageBroker, "Sends telemetry", "Kafka")
+
+
+@enduml
+

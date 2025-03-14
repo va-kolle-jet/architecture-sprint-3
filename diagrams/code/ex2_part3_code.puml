@@ -1,0 +1,114 @@
+@startuml C4_Code_Smart_House_ex2
+
+title To-Be С4 Code diagram Сервиса по работе с пользовательскими данными системы "Умный дом"
+
+package "UserService" {
+  class User {
+    - id: uuid
+    - FIO: String
+    - status: String
+    - code: String
+    - gender: String
+    - age: int
+    - createTime: DateTime
+    + getId(): uuid
+    + getFIO(): String
+    + getCode(): String
+    + getStatus(): String
+    + getGender(): String
+    + getAge(): int
+    + getCreateTime(): DateTime
+    + setFIO(): String
+    + setStatus(): String
+    + setAge(): int
+  }
+
+  class UserDTO {
+    - id: uuid
+    - FIO: String
+    - code(): String
+    - status: String
+    - gender: String
+    - age: int
+    - createTime: DateTime
+    + getId(): uuid
+    + getFIO(): String
+    + getCode(): String
+    + getStatus(): String
+    + getGender(): String
+    + getAge(): int
+    + getCreateTime(): DateTime
+    + setFIO(): String
+    + setStatus(): String
+    + setAge(): int
+  }
+
+  class PersData {
+    - id: uuid
+    - idUser: String
+    - persData: EncString
+    - createTime: DateTime
+    + getId(): uuid
+    + getIdUser(): String
+    + getCreateTime(): DateTime
+    + setPersData(): EncString
+  }
+
+  class PersDataDTO {
+    - id: uuid
+    - idUser: String
+    - persData: EncString
+    - createTime: DateTime
+    + getId(): uuid
+    + getIdUser(): String
+    + getCreateTime(): DateTime
+    + setPersData(): EncString
+  }
+
+  class UsersController {
+    + registerUser(userCode: String): Response<UserDTO>
+    + getUser(userId: uuid): Response<UserDTO>
+    + updateUser(user: UserDTO): Response<DeviceDTO>
+    + deleteUser(userId: uuid): Response<boolean>
+    + refreshPersData(userId: uuid): ResponseDto<boolean>
+    + setUserStatus(status: String): ResponseDto<boolean>
+    + findUsers(filter: json): Response<List<UserDTO>>
+  }
+
+  class UsersService {
+    + registerUser(userCode: String): UserDTO
+    + getUser(userId: uuid): UserDTO
+    + updateUser(user: UserDTO): DeviceDTO
+    + deleteUser(userId: uuid): boolean
+    + refreshPersData(userId: uuid): boolean
+    + setUserStatus(status: String): boolean
+    + findUsers(filter: json): List<UserDTO>
+  }
+
+  class UsersRepository {
+    + findById (userId: uuid): User
+    + findAllByFilter (filter: String): List<User>
+    + save (user: UserDTO): boolean
+    + updateById (userId: uuid, user: UserDTO): boolean
+  }
+
+  class PersDataRepository {
+    + findById (persDataId: uuid): PersData
+    + findByUserId (userId: uuid): PersData
+    + save (persData: PersDataDTO): boolean
+    + updateById (persDataId: uuid, persData: PersDataDTO): boolean
+  }
+
+  User "1" -- "1..1" PersData : includes
+  PersDataRepository --> PersData : uses
+  UsersRepository --> User : uses
+  UsersService --> UsersRepository : uses
+  UsersService --> PersDataRepository : uses
+  UsersService --> PersDataDTO : uses
+  UsersService --> UserDTO : uses
+  UsersController --> UsersService : uses
+}
+
+
+@enduml
+

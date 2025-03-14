@@ -1,9 +1,10 @@
-@startuml C4_Context_Smart_House_ex2
+@startuml ex2_part1_context
 
 title To-Be С4 Context diagram система "Умный дом"
 
 !include ../template_C4/C4_Context.puml
 !include ../template_C4/C4_Component.puml
+!include ../template_C4/C4_Container.puml
 
 Person(user, "User", "Пользователь системы")
 
@@ -23,20 +24,18 @@ System_Boundary(warmHouseSystem, "Умный дом", "Управление си
 
 
 System_Ext(DB, "DB") {
-        ContainerDb(userDb, "Users database", "PostgreSQL")
-        ContainerDb(deviceManagementDb, "Devices database", "PostgreSQL")
-        ContainerDb(telemetryDb, "Telemetry database", "PostgreSQL")
-        ContainerDb(reportDb, "Report database", "PostgreSQL")
+    ContainerDb(userDb, "Users database", "PostgreSQL")
+    ContainerDb(deviceManagementDb, "Devices database", "PostgreSQL")
+    ContainerDb(telemetryDb, "Telemetry database", "PostgreSQL")
+    ContainerDb(reportDb, "Report database", "PostgreSQL")
 }
 
 System_Ext(devicesSet,  "Группы подсистем умного дома") {
-    Container(devicesSetContainer) {
-        Component(heating, "Heating device", "Отопление") 
-        Component(temperatureSensor, "Temperature sensor", "Температура")
-        Component(lighting, "Lighting", "Освещение")
-        Component(automaticGates, "Automatic gates", "Автоматика")
-        Component(videoSurveillance, "Video surveillance", "Видео наблюдение")
-    }
+    Component(heating, "Heating device", "Отопление") 
+    Component(temperatureSensor, "Temperature sensor", "Температура")
+    Component(lighting, "Lighting", "Освещение")
+    Component(automaticGates, "Automatic gates", "Автоматика")
+    Component(videoSurveillance, "Video surveillance", "Видео наблюдение")
 }
 
 System_Ext(auth, "Auth", "Каталог пользователей") {

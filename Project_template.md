@@ -55,15 +55,15 @@
 
 **Диаграмма контейнеров (Containers)**
 
-![С4 Context diagram система "Умный дом"](diagrams/context/ex2_part1_context.png)
+![С4 Containers diagram система "Умный дом"](diagrams/container/ex2_part1_context.png)
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+![С4 Components diagram система "Умный дом"](diagrams/component/ex2_part2_component.png)
 
 **Диаграмма кода (Code)**
 
-Добавьте одну диаграмму или несколько.
+![С4 Code diagram система "Умный дом"](diagrams/code/ex2_part3_code.png)
 
 # Задание 3. Разработка ER-диаграммы
 
