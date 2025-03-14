@@ -1,0 +1,102 @@
+@startuml C4_Context_Warm_House
+
+title С4 Context diagram система "Теплый дом"
+
+!include ../template_C4/C4_Context.puml
+
+Person(user, "User", "Пользователь системы")
+
+System(warmHouseSystem, "'Теплый дом'", "Управление отоплением, получение текущего состояния отопления")
+
+System_Ext(heatingDevices, "Отопительное оборудование", "Uses REST API, JSON data format")
+System_Ext(temperatureSensor, "Датчики температуры", "Uses REST API, JSON data format")
+
+Rel(user, warmHouseSystem, "Send requests to system")
+
+Rel(warmHouseSystem, heatingDevices, "Send requests to heating device")
+Rel(warmHouseSystem, temperatureSensor, "Send requests to temperature sensors")
+
+@enduml
+
+@startuml ER_Diagram
+
+entity User {
+  id: UUID <<generated>>
+  fio: String
+  status: String
+  code: String
+  gender: String
+  age: Boolean
+  create_time: DateTime
+}
+entity PersData {
+  id: UUID <<generated>>
+  persData: String
+  create_time: DateTime
+  --
+  id_user: uuid <<FK>>
+}
+
+entity House {
+  id: UUID <<generated>>
+  address: String
+  create_time: DateTime
+  --
+  owner_id: UUID <<FK>>
+}
+
+entity Device {
+  id: UUID <<generated>>
+  name: String
+  serial_number: String
+  status: Integer
+  visible: Boolean
+  create_time: DateTime
+  --
+  device_type_id: UUID <<FK>>
+  house_id: UUID <<FK>>
+}
+
+entity DeviceType {
+  id: UUID <<generated>>
+  function: String
+  category: String
+}
+
+entity Telemetry {
+  id: UUID <<generated>>
+  metric: String
+  value: Double
+  timestamp: Integer
+  --
+  device_id: UUID <<FK>>
+}
+
+entity Report {
+  id: UUID <<generated>>
+  name: String
+  value: Base64
+  create_time: DateTime
+  --
+  owner_id: uuid <<FK>>
+}
+
+entity Subscription {
+  id: UUID <<generated>>
+  plan: String
+  until: DateTime
+  is_activated: Boolean
+  --
+  user_id: UUID <<FK>>
+}
+
+
+DeviceType "1" -- "*" Device
+User "1" -- "*" House
+User "1" -- "1" PersData
+User "1" -- "*" Report
+House "1" -- "*" Device
+Device "1" -- "*" Telemetry
+User "1" -- "*" Subscription
+
+@enduml
