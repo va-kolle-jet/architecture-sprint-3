@@ -37,6 +37,12 @@ entity PersData {
   id_user: uuid <<FK>>
 }
 
+entity User2House {
+  --
+  user_id: UUID <<FK>>
+  house_id: UUID <<FK>>
+}
+
 entity House {
   id: UUID <<generated>>
   address: String
@@ -92,7 +98,8 @@ entity Subscription {
 
 
 DeviceType "1" -- "*" Device
-User "1" -- "*" House
+User "1" -- "*" User2House
+House "1" -- "*" User2House
 User "1" -- "1" PersData
 User "1" -- "*" Report
 House "1" -- "*" Device
