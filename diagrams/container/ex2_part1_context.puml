@@ -1,0 +1,70 @@
+@startuml ex2_part1_context
+
+title To-Be С4 Context diagram система "Умный дом"
+
+!include ../template_C4/C4_Context.puml
+!include ../template_C4/C4_Component.puml
+!include ../template_C4/C4_Container.puml
+
+Person(user, "User", "Пользователь системы")
+
+System_Boundary(warmHouseSystem, "Умный дом", "Управление системой умного дома") {
+    Container(webApp, "Web application", "React", "Пользовательский интерфейс")
+
+    Container(messageBroker, "Message Broker", "Apache Kafka", "Для асинхронного взаимодействия внутренних компонентов системы")
+    Container(apiGateway, "API Gateway", "Kong", "Маршрутизация запросов, балансировка нагрузки, авторизация")
+  
+    Container(userService, "User service", "Spring Boot", "Авторизация, хранение персональных данных")
+    Container(deviceService, "Device service", "Spring Boot", "Бизнес логика по работе с умными устройствами")
+    Container(telemetryService, "Telemetry service", "Spring Boot", "Обработка данных телеметрии")
+    Container(notificationService, "Notification service", "Spring Boot", "Работа с уведомлениями")
+    Container(reportService, "Report service", "Spring Boot", "Формирование отчетов, графиков для мониторинга работы системы")
+    
+}
+
+
+System_Ext(DB, "DB") {
+    ContainerDb(userDb, "Users database", "PostgreSQL")
+    ContainerDb(deviceManagementDb, "Devices database", "PostgreSQL")
+    ContainerDb(telemetryDb, "Telemetry database", "PostgreSQL")
+    ContainerDb(reportDb, "Report database", "PostgreSQL")
+}
+
+System_Ext(devicesSet,  "Группы подсистем умного дома") {
+    Component(heating, "Heating device", "Отопление") 
+    Component(temperatureSensor, "Temperature sensor", "Температура")
+    Component(lighting, "Lighting", "Освещение")
+    Component(automaticGates, "Automatic gates", "Автоматика")
+    Component(videoSurveillance, "Video surveillance", "Видео наблюдение")
+}
+
+System_Ext(auth, "Auth", "Каталог пользователей") {
+}
+
+' User Rels
+Rel(user, webApp, "Uses")
+
+' Routing Rels
+Rel(webApp, apiGateway, "Send API requests", "REST")
+Rel(apiGateway, userService, "Send API requests", "REST")
+Rel(apiGateway, deviceService, "Send API requests", "REST")
+Rel(apiGateway, telemetryService, "Send API requests ", "REST")
+Rel(apiGateway , devicesSet, "Send API requests", "REST")
+Rel(notificationService, webApp, "Push notifications", "WebSocket")
+Rel(apiGateway, reportService, "Reports", "REST")
+Rel(apiGateway, auth, "auth", "REST")
+Rel(userService, auth, "auth", "REST")
+
+' DB Rels
+Rel(userService, userDb, "Reads and writes", "JDBC")
+Rel(deviceService, deviceManagementDb, "Reads and writes", "JDBC")
+Rel(telemetryService, telemetryDb, "Reads and writes", "JDBC")
+Rel(reportService, reportDb, "Reads and writes", "JDBC")
+
+' Message Broker Rels
+Rel(deviceService, messageBroker, "Publishes command / subscribes to instructions", "Kafka")
+Rel(telemetryService, messageBroker, "Subscribes to telemetry", "Kafka")
+Rel(notificationService, messageBroker, "Subscribes to events", "Kafka")
+Rel(devicesSet, messageBroker, "Sends telemetry", "Kafka")
+
+@enduml
